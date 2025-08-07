@@ -27,18 +27,14 @@ const StatisticsPage = () => {
     useEffect(() => {
         const fetchStats = async () => {
             setLoading(true);
-            setError('');
             try {
                 const token = localStorage.getItem('token');
                 const config = { headers: { 'Authorization': `Bearer ${token}` } };
-                const backendUrl = process.env.REACT_APP_BACKEND_URL; // Get URL from .env file
-                
-                // UPDATED: API call now uses the environment variable
+                const backendUrl = process.env.REACT_APP_BACKEND_URL;
                 const { data } = await axios.get(`${backendUrl}/api/predict/stats`, config);
                 setStats(data);
             } catch (err) {
-                setError('Failed to load statistics data.');
-                console.error(err);
+                setError('Failed to load statistics.');
             } finally {
                 setLoading(false);
             }
@@ -157,5 +153,4 @@ const StatisticsPage = () => {
         </div>
     );
 };
-
 export default StatisticsPage;
