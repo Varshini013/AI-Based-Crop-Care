@@ -2,7 +2,6 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
 import { Link } from 'react-router-dom';
-// CORRECTED: Removed the unused 'Leaf', 'Wand2', and 'Map' icons from this list
 import { UploadCloud, AlertTriangle, Loader2, Sparkles, ArrowRight, CheckCircle2, Microscope, Camera, X, RefreshCw, Lock } from 'lucide-react';
 
 // Main component for the disease detection feature
@@ -109,10 +108,11 @@ const DetectDiseasePage = () => {
         try {
             const token = localStorage.getItem('token');
             const config = { headers: { 'Authorization': `Bearer ${token}` } };
-            const { data } = await axios.post('/api/predict', formData, config);
+            const backendUrl = process.env.REACT_APP_BACKEND_URL;
+            const { data } = await axios.post(`${backendUrl}/api/predict`, formData, config);
             setPrediction(data);
         } catch (err) {
-            setError(err.response?.data?.message || 'Prediction failed. Please try again.');
+            setError(err.response?.data?.message || 'Prediction failed.');
         } finally {
             setLoading(false);
         }
@@ -256,5 +256,4 @@ const DetectDiseasePage = () => {
         </div>
     );
 };
-
 export default DetectDiseasePage;
