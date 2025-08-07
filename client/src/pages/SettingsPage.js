@@ -49,7 +49,6 @@ const SettingsPage = () => {
             const token = localStorage.getItem('token');
             const config = { headers: { 'Authorization': `Bearer ${token}` } };
             const backendUrl = process.env.REACT_APP_BACKEND_URL;
-            // UPDATED: API call now uses the environment variable
             const res = await axios.put(`${backendUrl}/api/auth/profile`, profileData, config);
             localStorage.setItem('user', JSON.stringify(res.data));
             setUser(res.data);
@@ -74,7 +73,6 @@ const SettingsPage = () => {
             const config = { headers: { 'Authorization': `Bearer ${token}` } };
             const { currentPassword, newPassword } = passwordData;
             const backendUrl = process.env.REACT_APP_BACKEND_URL;
-            // UPDATED: API call now uses the environment variable
             await axios.put(`${backendUrl}/api/auth/password`, { currentPassword, newPassword }, config);
             setMessage(prev => ({ ...prev, password: 'Password changed successfully!' }));
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
@@ -86,14 +84,13 @@ const SettingsPage = () => {
     };
 
     const handleDeleteAccount = async () => {
-        if (window.confirm('Are you absolutely sure? This will permanently erase all your data.')) {
+        if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
             setLoading(prev => ({ ...prev, delete: true }));
             setError({ profile: '', password: '', delete: '' });
             try {
                 const token = localStorage.getItem('token');
                 const config = { headers: { 'Authorization': `Bearer ${token}` } };
                 const backendUrl = process.env.REACT_APP_BACKEND_URL;
-                // UPDATED: API call now uses the environment variable
                 await axios.delete(`${backendUrl}/api/auth/account`, config);
                 localStorage.clear();
                 navigate('/');
@@ -114,8 +111,8 @@ const SettingsPage = () => {
             </div>
             <SettingsCard title="Profile Information">
                 <form onSubmit={handleProfileSubmit} className="space-y-4">
-                    <InputField icon={<User className="h-5 w-5 text-gray-400"/>} type="text" name="name" value={profileData.name} onChange={handleProfileChange} />
-                    <InputField icon={<Mail className="h-5 w-5 text-gray-400"/>} type="email" name="email" value={profileData.email} onChange={handleProfileChange} />
+                    <InputField icon={<User className="h-5 w-5 text-gray-400"/>} type="text" name="name" value={profileData.name} onChange={handleProfileChange} placeholder="Full Name" />
+                    <InputField icon={<Mail className="h-5 w-5 text-gray-400"/>} type="email" name="email" value={profileData.email} onChange={handleProfileChange} placeholder="Email Address" />
                     {message.profile && <p className="text-sm text-green-600">{message.profile}</p>}
                     {error.profile && <p className="text-sm text-red-600">{error.profile}</p>}
                     <div className="text-right">
@@ -157,5 +154,4 @@ const SettingsPage = () => {
         </div>
     );
 };
-
 export default SettingsPage;
