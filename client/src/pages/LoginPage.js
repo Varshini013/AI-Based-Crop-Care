@@ -20,7 +20,6 @@ const LoginPage = () => {
         try {
             const config = { headers: { 'Content-Type': 'application/json' } };
             const body = JSON.stringify({ email, password });
-            // THIS IS THE FIX: Use the environment variable for the backend URL
             const backendUrl = process.env.REACT_APP_BACKEND_URL;
             const res = await axios.post(`${backendUrl}/api/auth/login`, body, config);
             localStorage.setItem('token', res.data.token);
@@ -44,56 +43,25 @@ const LoginPage = () => {
                     </Link>
                     <p className="mt-2 text-gray-600">Sign in to access your dashboard.</p>
                 </div>
-
                 <form className="space-y-6" onSubmit={onSubmit}>
                     {error && <div className="p-3 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">{error}</div>}
-                    
                     <div className="relative">
-                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                           <Mail className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                            type="email"
-                            name="email"
-                            value={email}
-                            onChange={onChange}
-                            placeholder="Email Address"
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                            required
-                        />
+                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Mail className="h-5 w-5 text-gray-400" /></div>
+                        <input type="email" name="email" value={email} onChange={onChange} placeholder="Email Address" className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" required />
                     </div>
-
                     <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                           <KeyRound className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                            type="password"
-                            name="password"
-                            value={password}
-                            onChange={onChange}
-                            placeholder="Password"
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                            required
-                        />
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><KeyRound className="h-5 w-5 text-gray-400" /></div>
+                        <input type="password" name="password" value={password} onChange={onChange} placeholder="Password" className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" required />
                     </div>
-
                     <div>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-400 transition-all duration-300"
-                        >
+                        <button type="submit" disabled={loading} className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-400">
                             {loading ? 'Signing In...' : 'Sign In'}
                         </button>
                     </div>
                 </form>
-
                 <p className="text-center text-sm text-gray-600">
                     Don't have an account?{' '}
-                    <Link to="/register" className="font-medium text-green-600 hover:text-green-500">
-                        Sign Up
-                    </Link>
+                    <Link to="/register" className="font-medium text-green-600 hover:text-green-500">Sign Up</Link>
                 </p>
             </div>
         </div>
