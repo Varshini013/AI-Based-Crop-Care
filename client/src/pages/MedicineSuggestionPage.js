@@ -39,7 +39,7 @@ const MedicineSuggestionPage = () => {
             try {
                 const token = localStorage.getItem('token');
                 const config = { headers: { 'Authorization': `Bearer ${token}` } };
-                // Using the correct relative URL for deployment
+                // UPDATED: API call is now relative for deployment
                 const { data } = await axios.post('/api/predict/remedy', { diseaseName }, config);
                 setPlan(data);
             } catch (err) {
