@@ -13,7 +13,8 @@ const HistoryModal = ({ item, onClose }) => {
                 <div className="p-6 relative">
                     <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X size={24} /></button>
                     <div className="grid md:grid-cols-2 gap-6">
-                        <img src={`http://localhost:5001${item.imageUrl}`} alt={item.diseaseName} className="w-full h-auto rounded-lg object-cover border"/>
+                        {/* UPDATED: Image URL now uses the environment variable */}
+                        <img src={`${process.env.REACT_APP_BACKEND_URL}${item.imageUrl}`} alt={item.diseaseName} className="w-full h-auto rounded-lg object-cover border"/>
                         <div className="space-y-4">
                             <div>
                                 <p className="text-sm text-gray-500">Status</p>
@@ -57,7 +58,8 @@ const HistoryCard = ({ item, onSelect, isSelectMode, isSelected, onToggleSelect 
                 </div>
             )}
             <div className="grid grid-cols-3">
-                <div className="col-span-1"><img src={`http://localhost:5001${item.imageUrl}`} alt={item.diseaseName} className="h-full w-full object-cover"/></div>
+                {/* UPDATED: Image URL now uses the environment variable */}
+                <div className="col-span-1"><img src={`${process.env.REACT_APP_BACKEND_URL}${item.imageUrl}`} alt={item.diseaseName} className="h-full w-full object-cover"/></div>
                 <div className="col-span-2 p-4 flex flex-col justify-between">
                     <div>
                         <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${isHealthy ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
@@ -92,7 +94,9 @@ const HistoryPage = () => {
             try {
                 const token = localStorage.getItem('token');
                 const config = { headers: { 'Authorization': `Bearer ${token}` } };
-                const { data } = await axios.get('http://localhost:5001/api/predict/history', config);
+                const backendUrl = process.env.REACT_APP_BACKEND_URL;
+                // UPDATED: API call now uses the environment variable
+                const { data } = await axios.get(`${backendUrl}/api/predict/history`, config);
                 setHistory(data);
             } catch (err) {
                 setError('Failed to load detection history.');
@@ -130,8 +134,10 @@ const HistoryPage = () => {
         if (window.confirm(`Are you sure you want to delete ${selectedIds.size} item(s)?`)) {
             try {
                 const token = localStorage.getItem('token');
+                const backendUrl = process.env.REACT_APP_BACKEND_URL;
                 const config = { headers: { 'Authorization': `Bearer ${token}` }, data: { ids: Array.from(selectedIds) } };
-                await axios.delete('http://localhost:5001/api/predict', config);
+                // UPDATED: API call now uses the environment variable
+                await axios.delete(`${backendUrl}/api/predict`, config);
                 setHistory(prev => prev.filter(item => !selectedIds.has(item._id)));
                 setSelectedIds(new Set());
                 setIsSelectMode(false);
