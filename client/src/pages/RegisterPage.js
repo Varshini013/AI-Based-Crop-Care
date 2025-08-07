@@ -3,58 +3,32 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Leaf, Mail, User, KeyRound } from 'lucide-react';
 
-// Register Page Component
 const RegisterPage = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: '',
-    });
+    const [formData, setFormData] = useState({ name: '', email: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
     const { name, email, password } = formData;
 
-    const onChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        if (!name || !email || !password) {
-            return setError('Please fill out all fields.');
-        }
-        if (password.length < 6) {
-            return setError('Password must be at least 6 characters long.');
-        }
-
+        if (!name || !email || !password) return setError('Please fill out all fields.');
+        if (password.length < 6) return setError('Password must be at least 6 characters long.');
         setLoading(true);
         setError('');
-
         try {
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
+            const config = { headers: { 'Content-Type': 'application/json' } };
             const body = JSON.stringify({ name, email, password });
-            const backendUrl = process.env.REACT_APP_BACKEND_URL; // Get URL from .env file
-            
-            // UPDATED: API call now uses the environment variable
+            // THIS IS THE FIX: Use the environment variable
+            const backendUrl = process.env.REACT_APP_BACKEND_URL;
             const res = await axios.post(`${backendUrl}/api/auth/register`, body, config);
-
-            // Store the token and user info upon successful registration
             localStorage.setItem('token', res.data.token);
             localStorage.setItem('user', JSON.stringify(res.data));
-
-            // Redirect user to the dashboard
             navigate('/dashboard');
-
         } catch (err) {
-            // Display error message from the backend if it exists, otherwise a generic one
             setError(err.response?.data?.message || 'Registration failed. Please try again.');
-            console.error(err.response?.data);
         } finally {
             setLoading(false);
         }
@@ -142,5 +116,4 @@ const RegisterPage = () => {
         </div>
     );
 };
-
 export default RegisterPage;
