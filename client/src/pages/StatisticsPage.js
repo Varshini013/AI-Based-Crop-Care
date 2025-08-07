@@ -31,8 +31,10 @@ const StatisticsPage = () => {
             try {
                 const token = localStorage.getItem('token');
                 const config = { headers: { 'Authorization': `Bearer ${token}` } };
-                // UPDATED: Port changed to 5001
-                const { data } = await axios.get('http://localhost:5001/api/predict/stats', config);
+                const backendUrl = process.env.REACT_APP_BACKEND_URL; // Get URL from .env file
+                
+                // UPDATED: API call now uses the environment variable
+                const { data } = await axios.get(`${backendUrl}/api/predict/stats`, config);
                 setStats(data);
             } catch (err) {
                 setError('Failed to load statistics data.');
