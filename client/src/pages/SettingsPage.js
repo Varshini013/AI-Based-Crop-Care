@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { User, Mail, KeyRound, ShieldAlert, Loader2 } from 'lucide-react';
 
-// Reusable component for a section card
 const SettingsCard = ({ title, children }) => (
     <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
         <h2 className="text-xl font-bold text-gray-800 mb-4 pb-4 border-b">{title}</h2>
@@ -11,7 +10,6 @@ const SettingsCard = ({ title, children }) => (
     </div>
 );
 
-// Reusable component for an input field
 const InputField = ({ icon, type, name, value, onChange, placeholder }) => (
     <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">{icon}</div>
@@ -19,7 +17,6 @@ const InputField = ({ icon, type, name, value, onChange, placeholder }) => (
     </div>
 );
 
-// Main Settings Page Component
 const SettingsPage = () => {
     const [user, setUser] = useState(null);
     const [profileData, setProfileData] = useState({ name: '', email: '' });
@@ -43,8 +40,6 @@ const SettingsPage = () => {
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
         setLoading(prev => ({ ...prev, profile: true }));
-        setMessage({ profile: '', password: '' });
-        setError({ profile: '', password: '', delete: '' });
         try {
             const token = localStorage.getItem('token');
             const config = { headers: { 'Authorization': `Bearer ${token}` } };
@@ -54,7 +49,7 @@ const SettingsPage = () => {
             setUser(res.data);
             setMessage(prev => ({ ...prev, profile: 'Profile updated successfully!' }));
         } catch (err) {
-            setError(prev => ({ ...prev, profile: err.response?.data?.message || 'Failed to update profile.' }));
+            setError(prev => ({ ...prev, profile: err.response?.data?.message || 'Failed to update.' }));
         } finally {
             setLoading(prev => ({ ...prev, profile: false }));
         }
@@ -62,12 +57,8 @@ const SettingsPage = () => {
     
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
-        if (passwordData.newPassword !== passwordData.confirmPassword) {
-            return setError({ ...error, password: 'New passwords do not match.' });
-        }
+        if (passwordData.newPassword !== passwordData.confirmPassword) return setError({ ...error, password: 'New passwords do not match.' });
         setLoading(prev => ({ ...prev, password: true }));
-        setMessage({ profile: '', password: '' });
-        setError({ profile: '', password: '', delete: '' });
         try {
             const token = localStorage.getItem('token');
             const config = { headers: { 'Authorization': `Bearer ${token}` } };
@@ -77,16 +68,14 @@ const SettingsPage = () => {
             setMessage(prev => ({ ...prev, password: 'Password changed successfully!' }));
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } catch (err) {
-            setError(prev => ({ ...prev, password: err.response?.data?.message || 'Failed to change password.' }));
+            setError(prev => ({ ...prev, password: err.response?.data?.message || 'Failed to change.' }));
         } finally {
             setLoading(prev => ({ ...prev, password: false }));
         }
     };
 
     const handleDeleteAccount = async () => {
-        if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-            setLoading(prev => ({ ...prev, delete: true }));
-            setError({ profile: '', password: '', delete: '' });
+        if (window.confirm('Are you sure?')) {
             try {
                 const token = localStorage.getItem('token');
                 const config = { headers: { 'Authorization': `Bearer ${token}` } };
@@ -95,8 +84,7 @@ const SettingsPage = () => {
                 localStorage.clear();
                 navigate('/');
             } catch (err) {
-                setError(prev => ({ ...prev, delete: 'Failed to delete account. Please try again.' }));
-                setLoading(prev => ({ ...prev, delete: false }));
+                setError(prev => ({ ...prev, delete: 'Failed to delete account.' }));
             }
         }
     };
@@ -111,8 +99,8 @@ const SettingsPage = () => {
             </div>
             <SettingsCard title="Profile Information">
                 <form onSubmit={handleProfileSubmit} className="space-y-4">
-                    <InputField icon={<User className="h-5 w-5 text-gray-400"/>} type="text" name="name" value={profileData.name} onChange={handleProfileChange} placeholder="Full Name" />
-                    <InputField icon={<Mail className="h-5 w-5 text-gray-400"/>} type="email" name="email" value={profileData.email} onChange={handleProfileChange} placeholder="Email Address" />
+                    <InputField icon={<User className="h-5 w-5 text-gray-400"/>} type="text" name="name" value={profileData.name} onChange={handleProfileChange} />
+                    <InputField icon={<Mail className="h-5 w-5 text-gray-400"/>} type="email" name="email" value={profileData.email} onChange={handleProfileChange} />
                     {message.profile && <p className="text-sm text-green-600">{message.profile}</p>}
                     {error.profile && <p className="text-sm text-red-600">{error.profile}</p>}
                     <div className="text-right">
