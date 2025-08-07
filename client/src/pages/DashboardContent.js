@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -43,10 +43,9 @@ const DashboardContent = () => {
         try {
             const token = localStorage.getItem('token');
             const config = { headers: { 'Authorization': `Bearer ${token}` } };
-            const backendUrl = process.env.REACT_APP_BACKEND_URL; // Get URL from .env file
+            const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
             const [statsRes, historyRes, activityRes] = await Promise.all([
-                // UPDATED: API calls now use the environment variable
                 axios.get(`${backendUrl}/api/predict/stats`, config),
                 axios.get(`${backendUrl}/api/predict/history`, config),
                 axios.get(`${backendUrl}/api/predict/activity`, config)
@@ -133,7 +132,6 @@ const DashboardContent = () => {
                         <div className="space-y-3">
                             {history.length > 0 ? history.map(item => (
                                 <div key={item._id} className="flex items-center text-sm">
-                                    {/* UPDATED: Image URL now uses the environment variable */}
                                     <img src={`${process.env.REACT_APP_BACKEND_URL}${item.imageUrl}`} alt="" className="h-8 w-8 rounded-md object-cover mr-3"/>
                                     <p className="font-medium text-gray-700 truncate">{item.diseaseName.replace(/_/g, ' ')}</p>
                                 </div>
@@ -143,7 +141,6 @@ const DashboardContent = () => {
                 </div>
             </div>
 
-            {/* --- QUICK ACTIONS MOVED TO THE BOTTOM --- */}
             <div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Quick Actions</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
