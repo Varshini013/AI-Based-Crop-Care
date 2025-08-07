@@ -43,11 +43,13 @@ const DashboardContent = () => {
         try {
             const token = localStorage.getItem('token');
             const config = { headers: { 'Authorization': `Bearer ${token}` } };
+            const backendUrl = process.env.REACT_APP_BACKEND_URL; // Get URL from .env file
 
             const [statsRes, historyRes, activityRes] = await Promise.all([
-                axios.get('http://localhost:5001/api/predict/stats', config),
-                axios.get('http://localhost:5001/api/predict/history', config),
-                axios.get('http://localhost:5001/api/predict/activity', config)
+                // UPDATED: API calls now use the environment variable
+                axios.get(`${backendUrl}/api/predict/stats`, config),
+                axios.get(`${backendUrl}/api/predict/history`, config),
+                axios.get(`${backendUrl}/api/predict/activity`, config)
             ]);
 
             setStats(statsRes.data);
@@ -131,7 +133,8 @@ const DashboardContent = () => {
                         <div className="space-y-3">
                             {history.length > 0 ? history.map(item => (
                                 <div key={item._id} className="flex items-center text-sm">
-                                    <img src={`http://localhost:5001${item.imageUrl}`} alt="" className="h-8 w-8 rounded-md object-cover mr-3"/>
+                                    {/* UPDATED: Image URL now uses the environment variable */}
+                                    <img src={`${process.env.REACT_APP_BACKEND_URL}${item.imageUrl}`} alt="" className="h-8 w-8 rounded-md object-cover mr-3"/>
                                     <p className="font-medium text-gray-700 truncate">{item.diseaseName.replace(/_/g, ' ')}</p>
                                 </div>
                             )) : <p className="text-sm text-gray-500">No recent scans.</p>}
