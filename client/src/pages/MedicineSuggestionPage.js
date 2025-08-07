@@ -39,8 +39,8 @@ const MedicineSuggestionPage = () => {
             try {
                 const token = localStorage.getItem('token');
                 const config = { headers: { 'Authorization': `Bearer ${token}` } };
-                // UPDATED: API call is now relative for deployment
-                const { data } = await axios.post('/api/predict/remedy', { diseaseName }, config);
+                const backendUrl = process.env.REACT_APP_BACKEND_URL;
+                const { data } = await axios.post(`${backendUrl}/api/predict/remedy`, { diseaseName }, config);
                 setPlan(data);
             } catch (err) {
                 setError('Failed to fetch remedy plan. Please try again.');
