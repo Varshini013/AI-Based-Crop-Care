@@ -35,9 +35,10 @@ const LoginPage = () => {
                 },
             };
             const body = JSON.stringify({ email, password });
+            const backendUrl = process.env.REACT_APP_BACKEND_URL; // Get URL from .env file
 
-            // UPDATED: Port changed to 5001
-            const res = await axios.post('http://localhost:5001/api/auth/login', body, config);
+            // UPDATED: API call now uses the environment variable
+            const res = await axios.post(`${backendUrl}/api/auth/login`, body, config);
 
             // Store the token and user info upon successful login
             localStorage.setItem('token', res.data.token);
