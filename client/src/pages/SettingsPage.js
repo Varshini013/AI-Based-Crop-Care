@@ -48,7 +48,9 @@ const SettingsPage = () => {
         try {
             const token = localStorage.getItem('token');
             const config = { headers: { 'Authorization': `Bearer ${token}` } };
-            const res = await axios.put('http://localhost:5001/api/auth/profile', profileData, config);
+            const backendUrl = process.env.REACT_APP_BACKEND_URL;
+            // UPDATED: API call now uses the environment variable
+            const res = await axios.put(`${backendUrl}/api/auth/profile`, profileData, config);
             localStorage.setItem('user', JSON.stringify(res.data));
             setUser(res.data);
             setMessage(prev => ({ ...prev, profile: 'Profile updated successfully!' }));
@@ -71,7 +73,9 @@ const SettingsPage = () => {
             const token = localStorage.getItem('token');
             const config = { headers: { 'Authorization': `Bearer ${token}` } };
             const { currentPassword, newPassword } = passwordData;
-            await axios.put('http://localhost:5001/api/auth/password', { currentPassword, newPassword }, config);
+            const backendUrl = process.env.REACT_APP_BACKEND_URL;
+            // UPDATED: API call now uses the environment variable
+            await axios.put(`${backendUrl}/api/auth/password`, { currentPassword, newPassword }, config);
             setMessage(prev => ({ ...prev, password: 'Password changed successfully!' }));
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } catch (err) {
@@ -88,7 +92,9 @@ const SettingsPage = () => {
             try {
                 const token = localStorage.getItem('token');
                 const config = { headers: { 'Authorization': `Bearer ${token}` } };
-                await axios.delete('http://localhost:5001/api/auth/account', config);
+                const backendUrl = process.env.REACT_APP_BACKEND_URL;
+                // UPDATED: API call now uses the environment variable
+                await axios.delete(`${backendUrl}/api/auth/account`, config);
                 localStorage.clear();
                 navigate('/');
             } catch (err) {
