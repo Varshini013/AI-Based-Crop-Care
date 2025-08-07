@@ -85,7 +85,12 @@ const getRemedyDetails = async (req, res) => {
 const predictDisease = (req, res) => {
     if (!req.file) return res.status(400).json({ message: 'No image file uploaded.' });
     const imagePath = req.file.path;
-    const pythonProcess = spawn('python', ['model/predict.py', imagePath]);
+    
+    // --- THIS IS THE FIX FOR RENDER DEPLOYMENT ---
+    // We use 'python3' as the command for Render's Linux environment.
+    const pythonProcess = spawn('python3', ['model/predict.py', imagePath]);
+    // --- END OF FIX ---
+
     let predictionResult = '';
     pythonProcess.stdout.on('data', (data) => { predictionResult += data.toString(); });
     pythonProcess.stderr.on('data', (data) => { console.error(`Python Script Error: ${data}`); });
@@ -102,7 +107,6 @@ const predictDisease = (req, res) => {
 
 const getHistory = async (req, res) => {
     try {
-        // THIS IS THE FIX: Using req.user._id ensures we are querying with a proper ObjectId.
         const history = await Prediction.find({ user: req.user._id }).sort({ createdAt: -1 });
         res.json(history);
     } catch (error) {
@@ -113,7 +117,6 @@ const getHistory = async (req, res) => {
 
 const getStats = async (req, res) => {
     try {
-        // THIS IS THE FIX: Aggregation queries are stricter and require the ID to be an ObjectId.
         const stats = await Prediction.aggregate([
             { $match: { user: req.user._id } },
             { $group: { _id: '$diseaseName', count: { $sum: 1 } } },
@@ -135,7 +138,7 @@ const deletePredictions = async (req, res) => {
     try {
         await Prediction.deleteMany({
             _id: { $in: ids },
-            user: req.user._id // THIS IS THE FIX: Using ObjectId for security.
+            user: req.user._id
         });
         res.json({ message: 'Selected predictions deleted successfully.' });
     } catch (error) {
@@ -155,7 +158,7 @@ const getWeeklyActivity = async (req, res) => {
         const activity = await Prediction.aggregate([
             {
                 $match: {
-                    user: req.user._id, // THIS IS THE FIX: Using the ObjectId here as well.
+                    user: req.user._id,
                     createdAt: { $gte: sevenDaysAgo, $lte: today }
                 }
             },
