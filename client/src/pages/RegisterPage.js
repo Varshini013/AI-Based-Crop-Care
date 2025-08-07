@@ -21,7 +21,6 @@ const RegisterPage = () => {
         try {
             const config = { headers: { 'Content-Type': 'application/json' } };
             const body = JSON.stringify({ name, email, password });
-            // THIS IS THE FIX: Use the environment variable
             const backendUrl = process.env.REACT_APP_BACKEND_URL;
             const res = await axios.post(`${backendUrl}/api/auth/register`, body, config);
             localStorage.setItem('token', res.data.token);
@@ -45,72 +44,29 @@ const RegisterPage = () => {
                     </Link>
                     <p className="mt-2 text-gray-600">Join to start protecting your crops today.</p>
                 </div>
-
                 <form className="space-y-6" onSubmit={onSubmit}>
                     {error && <div className="p-3 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">{error}</div>}
-                    
                     <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                           <User className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                            type="text"
-                            name="name"
-                            value={name}
-                            onChange={onChange}
-                            placeholder="Full Name"
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                            required
-                        />
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><User className="h-5 w-5 text-gray-400" /></div>
+                        <input type="text" name="name" value={name} onChange={onChange} placeholder="Full Name" className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" required />
                     </div>
-
                     <div className="relative">
-                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                           <Mail className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                            type="email"
-                            name="email"
-                            value={email}
-                            onChange={onChange}
-                            placeholder="Email Address"
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                            required
-                        />
+                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Mail className="h-5 w-5 text-gray-400" /></div>
+                        <input type="email" name="email" value={email} onChange={onChange} placeholder="Email Address" className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" required />
                     </div>
-
                     <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                           <KeyRound className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                            type="password"
-                            name="password"
-                            value={password}
-                            onChange={onChange}
-                            placeholder="Password"
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                            minLength="6"
-                            required
-                        />
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><KeyRound className="h-5 w-5 text-gray-400" /></div>
+                        <input type="password" name="password" value={password} onChange={onChange} placeholder="Password" className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" minLength="6" required />
                     </div>
-
                     <div>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-400 transition-all duration-300"
-                        >
+                        <button type="submit" disabled={loading} className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-400">
                             {loading ? 'Creating Account...' : 'Sign Up'}
                         </button>
                     </div>
                 </form>
-
                 <p className="text-center text-sm text-gray-600">
                     Already have an account?{' '}
-                    <Link to="/login" className="font-medium text-green-600 hover:text-green-500">
-                        Log In
-                    </Link>
+                    <Link to="/login" className="font-medium text-green-600 hover:text-green-500">Log In</Link>
                 </p>
             </div>
         </div>
