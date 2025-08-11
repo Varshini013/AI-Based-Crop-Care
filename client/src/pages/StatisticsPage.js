@@ -27,14 +27,18 @@ const StatisticsPage = () => {
     useEffect(() => {
         const fetchStats = async () => {
             setLoading(true);
+            setError('');
             try {
                 const token = localStorage.getItem('token');
                 const config = { headers: { 'Authorization': `Bearer ${token}` } };
-                const backendUrl = process.env.REACT_APP_BACKEND_URL;
+                const backendUrl = process.env.REACT_APP_BACKEND_URL; // Get URL from .env file
+                
+                // UPDATED: API call now uses the environment variable
                 const { data } = await axios.get(`${backendUrl}/api/predict/stats`, config);
                 setStats(data);
             } catch (err) {
-                setError('Failed to load statistics.');
+                setError('Failed to load statistics data.');
+                console.error(err);
             } finally {
                 setLoading(false);
             }
@@ -42,10 +46,22 @@ const StatisticsPage = () => {
         fetchStats();
     }, []);
 
+    // Process data for charts and cards using useMemo for efficiency
     const processedData = useMemo(() => {
-        if (!stats || stats.length === 0) return { totalScans: 0, uniqueDiseases: 0, diseasedCount: 0, healthyCount: 0, chartData: [], pieData: [] };
+        if (!stats || stats.length === 0) {
+            return {
+                totalScans: 0,
+                uniqueDiseases: 0,
+                diseasedCount: 0,
+                healthyCount: 0,
+                chartData: [],
+                pieData: []
+            };
+        }
+
         let diseasedCount = 0;
         let healthyCount = 0;
+        
         const chartData = stats.map(item => {
             const isHealthy = item.disease.toLowerCase().includes('healthy');
             if (isHealthy) {
@@ -53,18 +69,38 @@ const StatisticsPage = () => {
             } else {
                 diseasedCount += item.count;
             }
-            return { name: item.disease.replace(/___/g, ' - ').replace(/_/g, ' '), count: item.count };
+            return {
+                name: item.disease.replace(/___/g, ' - ').replace(/_/g, ' '),
+                count: item.count,
+            };
         });
+
         const totalScans = diseasedCount + healthyCount;
+        
         const pieData = [
             { name: 'Diseased', value: diseasedCount, color: '#EF4444' },
             { name: 'Healthy', value: healthyCount, color: '#10B981' },
         ];
-        return { totalScans, uniqueDiseases: stats.filter(s => !s.disease.toLowerCase().includes('healthy')).length, diseasedCount, healthyCount, chartData, pieData };
+
+        return {
+            totalScans,
+            uniqueDiseases: stats.filter(s => !s.disease.toLowerCase().includes('healthy')).length,
+            diseasedCount,
+            healthyCount,
+            chartData,
+            pieData
+        };
     }, [stats]);
 
-    if (loading) return <div className="flex justify-center items-center h-64"><Loader2 className="h-12 w-12 animate-spin text-green-600" /></div>;
-    if (error) return <div className="flex justify-center items-center h-64 bg-red-50 text-red-600 p-4 rounded-lg"><AlertTriangle className="mr-3" /> {error}</div>;
+
+    if (loading) {
+        return <div className="flex justify-center items-center h-64"><Loader2 className="h-12 w-12 animate-spin text-green-600" /></div>;
+    }
+
+    if (error) {
+        return <div className="flex justify-center items-center h-64 bg-red-50 text-red-600 p-4 rounded-lg"><AlertTriangle className="mr-3" /> {error}</div>;
+    }
+
     if (stats.length === 0) {
         return (
             <div className="text-center py-16 bg-white rounded-lg border-2 border-dashed">
@@ -81,14 +117,18 @@ const StatisticsPage = () => {
                 <h1 className="text-3xl font-bold text-gray-800">Health Statistics</h1>
                 <p className="text-gray-600 mt-1">An analytical overview of your detection history.</p>
             </div>
+
+            {/* Stat Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard icon={<ScanLine size={24} className="text-white"/>} title="Total Scans" value={processedData.totalScans} color="bg-blue-500" />
                 <StatCard icon={<Bug size={24} className="text-white"/>} title="Unique Diseases" value={processedData.uniqueDiseases} color="bg-orange-500" />
                 <StatCard icon={<AlertTriangle size={24} className="text-white"/>} title="Diseased Scans" value={processedData.diseasedCount} color="bg-red-500" />
                 <StatCard icon={<ShieldCheck size={24} className="text-white"/>} title="Healthy Scans" value={processedData.healthyCount} color="bg-green-500" />
             </div>
+
+            {/* Charts Section */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                <div className="xl:col-span-2 bg-white p-6 rounded-xl shadow-md border">
+                <div className="xl:col-span-2 bg-white p-6 rounded-xl shadow-md border border-gray-200">
                     <h2 className="text-xl font-bold text-gray-800 mb-4">Detections by Disease</h2>
                     <ResponsiveContainer width="100%" height={400}>
                         <BarChart data={processedData.chartData} layout="vertical" margin={{ top: 5, right: 30, left: 100, bottom: 5 }}>
@@ -101,7 +141,8 @@ const StatisticsPage = () => {
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
-                <div className="bg-white p-6 rounded-xl shadow-md border">
+
+                <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
                     <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">Healthy vs. Diseased</h2>
                      <ResponsiveContainer width="100%" height={400}>
                         <PieChart>
@@ -116,4 +157,5 @@ const StatisticsPage = () => {
         </div>
     );
 };
+
 export default StatisticsPage;
