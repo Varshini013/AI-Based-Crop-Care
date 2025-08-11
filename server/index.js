@@ -15,6 +15,7 @@ app.use(cors());
 
 // Middleware
 app.use(express.json());
+// This is for Vercel/Render's temporary file system, it's safe to keep.
 app.use('/uploads', express.static(path.join(os.tmpdir(), 'uploads')));
 
 // DB Connection
