@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { User, Mail, KeyRound, ShieldAlert, Loader2 } from 'lucide-react';
 
+// Reusable component for a section card
 const SettingsCard = ({ title, children }) => (
     <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
         <h2 className="text-xl font-bold text-gray-800 mb-4 pb-4 border-b">{title}</h2>
@@ -10,6 +11,7 @@ const SettingsCard = ({ title, children }) => (
     </div>
 );
 
+// Reusable component for an input field
 const InputField = ({ icon, type, name, value, onChange, placeholder }) => (
     <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">{icon}</div>
@@ -17,6 +19,7 @@ const InputField = ({ icon, type, name, value, onChange, placeholder }) => (
     </div>
 );
 
+// Main Settings Page Component
 const SettingsPage = () => {
     const [user, setUser] = useState(null);
     const [profileData, setProfileData] = useState({ name: '', email: '' });
@@ -40,16 +43,19 @@ const SettingsPage = () => {
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
         setLoading(prev => ({ ...prev, profile: true }));
+        setMessage({ profile: '', password: '' });
+        setError({ profile: '', password: '', delete: '' });
         try {
             const token = localStorage.getItem('token');
             const config = { headers: { 'Authorization': `Bearer ${token}` } };
-            const backendUrl = process.env.REACT_APP_BACKEND_URL;
+            const backendUrl = process.env.REACT_APP_BACKEND_URL; // Get URL from .env file
+            // UPDATED: API call now uses the environment variable
             const res = await axios.put(`${backendUrl}/api/auth/profile`, profileData, config);
             localStorage.setItem('user', JSON.stringify(res.data));
             setUser(res.data);
             setMessage(prev => ({ ...prev, profile: 'Profile updated successfully!' }));
         } catch (err) {
-            setError(prev => ({ ...prev, profile: err.response?.data?.message || 'Failed to update.' }));
+            setError(prev => ({ ...prev, profile: err.response?.data?.message || 'Failed to update profile.' }));
         } finally {
             setLoading(prev => ({ ...prev, profile: false }));
         }
@@ -57,34 +63,43 @@ const SettingsPage = () => {
     
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
-        if (passwordData.newPassword !== passwordData.confirmPassword) return setError({ ...error, password: 'New passwords do not match.' });
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            return setError({ ...error, password: 'New passwords do not match.' });
+        }
         setLoading(prev => ({ ...prev, password: true }));
+        setMessage({ profile: '', password: '' });
+        setError({ profile: '', password: '', delete: '' });
         try {
             const token = localStorage.getItem('token');
             const config = { headers: { 'Authorization': `Bearer ${token}` } };
             const { currentPassword, newPassword } = passwordData;
-            const backendUrl = process.env.REACT_APP_BACKEND_URL;
+            const backendUrl = process.env.REACT_APP_BACKEND_URL; // Get URL from .env file
+            // UPDATED: API call now uses the environment variable
             await axios.put(`${backendUrl}/api/auth/password`, { currentPassword, newPassword }, config);
             setMessage(prev => ({ ...prev, password: 'Password changed successfully!' }));
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } catch (err) {
-            setError(prev => ({ ...prev, password: err.response?.data?.message || 'Failed to change.' }));
+            setError(prev => ({ ...prev, password: err.response?.data?.message || 'Failed to change password.' }));
         } finally {
             setLoading(prev => ({ ...prev, password: false }));
         }
     };
 
     const handleDeleteAccount = async () => {
-        if (window.confirm('Are you sure?')) {
+        if (window.confirm('Are you absolutely sure? This will permanently erase all your data.')) {
+            setLoading(prev => ({ ...prev, delete: true }));
+            setError({ profile: '', password: '', delete: '' });
             try {
                 const token = localStorage.getItem('token');
                 const config = { headers: { 'Authorization': `Bearer ${token}` } };
-                const backendUrl = process.env.REACT_APP_BACKEND_URL;
+                const backendUrl = process.env.REACT_APP_BACKEND_URL; // Get URL from .env file
+                // UPDATED: API call now uses the environment variable
                 await axios.delete(`${backendUrl}/api/auth/account`, config);
                 localStorage.clear();
                 navigate('/');
             } catch (err) {
-                setError(prev => ({ ...prev, delete: 'Failed to delete account.' }));
+                setError(prev => ({ ...prev, delete: 'Failed to delete account. Please try again.' }));
+                setLoading(prev => ({ ...prev, delete: false }));
             }
         }
     };
@@ -142,4 +157,5 @@ const SettingsPage = () => {
         </div>
     );
 };
+
 export default SettingsPage;
