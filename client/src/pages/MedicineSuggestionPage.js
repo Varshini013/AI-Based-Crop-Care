@@ -39,7 +39,8 @@ const MedicineSuggestionPage = () => {
             try {
                 const token = localStorage.getItem('token');
                 const config = { headers: { 'Authorization': `Bearer ${token}` } };
-                const backendUrl = process.env.REACT_APP_BACKEND_URL;
+                // THIS IS THE FIX: Use the correct URL for local development
+                const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5001';
                 const { data } = await axios.post(`${backendUrl}/api/predict/remedy`, { diseaseName }, config);
                 setPlan(data);
             } catch (err) {
