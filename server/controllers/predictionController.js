@@ -204,3 +204,4 @@ module.exports = {
     getRemedyDetails,
     getWeeklyActivity
 };
+
