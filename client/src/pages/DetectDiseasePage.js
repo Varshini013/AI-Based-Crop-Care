@@ -108,11 +108,12 @@ const DetectDiseasePage = () => {
         try {
             const token = localStorage.getItem('token');
             const config = { headers: { 'Authorization': `Bearer ${token}` } };
-            const backendUrl = process.env.REACT_APP_BACKEND_URL;
+            const backendUrl = process.env.REACT_APP_BACKEND_URL; // Get URL from .env file
+            // UPDATED: API call now uses the environment variable
             const { data } = await axios.post(`${backendUrl}/api/predict`, formData, config);
             setPrediction(data);
         } catch (err) {
-            setError(err.response?.data?.message || 'Prediction failed.');
+            setError(err.response?.data?.message || 'Prediction failed. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -256,4 +257,5 @@ const DetectDiseasePage = () => {
         </div>
     );
 };
+
 export default DetectDiseasePage;
